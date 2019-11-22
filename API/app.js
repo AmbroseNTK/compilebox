@@ -230,7 +230,7 @@ app.post('/categories/create', bruteforce.prevent, (req, res) => {
 
 });
 
-app.get('/people/search', bruteforce.prevent, async (req, res) => {
+app.post('/people/search', bruteforce.prevent, async (req, res) => {
     let email = req.body.email;
     let result = await firebase.searchPeople(email);
     res.send(result);
