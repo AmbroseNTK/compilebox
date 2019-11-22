@@ -130,7 +130,7 @@ FirebaseApp.prototype.searchPeople = async function (email) {
     let data;
 
     user = await this.instance.auth().getUserByEmail(email);
-    data = (await this.db.ref("/users/" + user.uid).once()).val();
+    data = (await this.db.ref("/users/" + user.uid).once("value")).val();
 
     let result = { challenges: [], history: [] };
     // Get own challenges
