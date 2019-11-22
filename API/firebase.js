@@ -128,13 +128,10 @@ FirebaseApp.prototype.replyInvitation = function (isAccepted, uid, teamID) {
 FirebaseApp.prototype.searchPeople = async function (email) {
     let user;
     let data;
-    try {
-        user = await this.instance.auth().getUserByEmail(email);
-        data = (await this.db.ref("/users/" + user.uid).once()).val();
-    }
-    catch (e) {
-        return null;
-    }
+
+    user = await this.instance.auth().getUserByEmail(email);
+    data = (await this.db.ref("/users/" + user.uid).once()).val();
+
     let result = { challenges: [], history: [] };
     // Get own challenges
     let challengeID = Object.keys(this.challenges);
