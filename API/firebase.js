@@ -135,7 +135,7 @@ FirebaseApp.prototype.searchPeople = async function (email) {
     catch (e) {
         return null;
     }
-    let result = { challenges: [], history: [] };
+    let result = { challenges: [], history: [], profile: {} };
     // Get own challenges
     let challengeID = Object.keys(this.challenges);
     for (let i = 0; i < challengeID.length; i++) {
@@ -168,6 +168,12 @@ FirebaseApp.prototype.searchPeople = async function (email) {
                 solution: solution
             });
         }
+    }
+
+    result.profile = {
+        email: user.email,
+        name: user.displayName,
+        photoURL: user.photoURL
     }
 
     return result;
