@@ -165,6 +165,7 @@ FirebaseApp.prototype.searchPeople = async function (email) {
                 challengeID: current.challengeID,
                 execTime: current.execTime,
                 languageID: current.languageID,
+                date: current.date,
                 solution: solution
             });
         }
