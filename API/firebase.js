@@ -156,8 +156,10 @@ FirebaseApp.prototype.searchPeople = async function (email) {
             let current = data.history[historyID[i]];
             let challenge = this.challenges[historyID[i]];
             let solution = "";
-            if (challenge != undefined && challenge.canViewSolution != undefined) {
-                solution = current.code;
+            if (challenge != undefined &&) {
+                if (challenge.canViewSolution == undefined || challenge.canViewSolution == true) {
+                    solution = current.code;
+                }
             }
             result.history.push({
                 challengeID: current.challengeID,
