@@ -230,13 +230,13 @@ app.post('/categories/create', bruteforce.prevent, (req, res) => {
 
 });
 
-app.post('/people/search', bruteforce.prevent, async (req, res) => {
+app.post('/people/search', async (req, res) => {
     let email = req.body.email;
     let result = await firebase.searchPeople(email);
     res.send(result);
 })
 
-app.get('/people/list', bruteforce.prevent, async (req, res) => {
+app.get('/people/list', async (req, res) => {
     let listUser = await firebase.getListPeople();
     res.send(listUser);
 });
