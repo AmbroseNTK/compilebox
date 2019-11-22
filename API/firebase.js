@@ -15,6 +15,11 @@ var FirebaseApp = function () {
         console.log("Reloaded challenges");
     });
 
+    db.ref("categories/").on("value", (snapshot) => {
+        this.categories = snapshot.val();
+        console.log("Reloaded categories");
+    })
+
     this.instance = app;
     this.db = db;
 
@@ -36,9 +41,13 @@ FirebaseApp.prototype.writeHistory = function (obj) {
             obj.date = Date.now();
             this.db.ref("challenges/" + obj.challengeID + "/history/" + obj.uid).set(obj);
             this.db.ref("users/" + obj.uid + "/history/" + obj.challengeID).set(obj);
-        })
+        });
 
     }
+}
+
+FirebaseApp.prototype.createCategory = function (category) {
+    this.db.ref("categories/" + category.id).set(category);
 }
 
 FirebaseApp.prototype.getUserList = async function (onFinish) {
@@ -116,5 +125,14 @@ FirebaseApp.prototype.replyInvitation = function (isAccepted, uid, teamID) {
     this.db.ref('users/' + uid + '/invitation/' + teamID).remove();
 }
 
+FirebaseApp.prototype.searchPeople = async function (email) {
+    //this.instance.auth().getUserByEmail
+}
+
+FirebaseApp.prototype.getListPeople = async function () {
+    let listUsers = await this.instance.auth().listUsers();
+    console.log(listUsers);
+    return listUsers;
+}
 
 module.exports = FirebaseApp;

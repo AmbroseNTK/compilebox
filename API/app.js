@@ -209,6 +209,37 @@ app.post('/team/invitation/reply', bruteforce.prevent, (req, res) => {
     res.send('replied');
 })
 
+app.post('/categories/create', bruteforce.prevent, (req, res) => {
+    let category = req.body.category;
+    let uid = req.body.uid;
+
+    if (firebase.challenges != undefined) {
+        if (category.uid == uid) {
+            for (let challengeID of category.challengeList) {
+                if (firebase.challenges[challengeID] != undefined &&
+                    firebase.challenges[challengeID].ownerID != uid) {
+                    res.send("Permission denied");
+                }
+            }
+            firebase.createCategory(category);
+            res.send(category.name + " is created");
+        }
+        res.send("Permission denied");
+    }
+    res.send("Permission denied");
+
+});
+
+app.get('/people/search', bruteforce.prevent, (req, res) => {
+    let email = req.body.email;
+
+})
+
+app.get('/people/list', bruteforce.prevent, async (req, res) => {
+    await firebase.getListPeople();
+    res.send({ "status": "success" });
+});
+
 console.log("Listening at " + port);
 //server.listen(port);
 httpsServer.listen(port);
