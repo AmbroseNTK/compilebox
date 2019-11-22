@@ -236,8 +236,8 @@ app.get('/people/search', bruteforce.prevent, (req, res) => {
 })
 
 app.get('/people/list', bruteforce.prevent, async (req, res) => {
-    await firebase.getListPeople();
-    res.send({ "status": "success" });
+    let listUser = await firebase.getListPeople();
+    res.send(listUser);
 });
 
 console.log("Listening at " + port);

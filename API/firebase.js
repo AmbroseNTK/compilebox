@@ -131,8 +131,11 @@ FirebaseApp.prototype.searchPeople = async function (email) {
 
 FirebaseApp.prototype.getListPeople = async function () {
     let listUsers = await this.instance.auth().listUsers();
-    console.log(listUsers);
-    return listUsers;
+    return listUsers.users.map((user) => ({
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+    }));
 }
 
 module.exports = FirebaseApp;
