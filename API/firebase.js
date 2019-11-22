@@ -128,25 +128,43 @@ FirebaseApp.prototype.replyInvitation = function (isAccepted, uid, teamID) {
 FirebaseApp.prototype.searchPeople = async function (email) {
     let user;
     let data;
-
-    user = await this.instance.auth().getUserByEmail(email);
-    data = (await this.db.ref("/users/" + user.uid).once("value")).val();
-
+    try {
+        user = await this.instance.auth().getUserByEmail(email);
+        data = (await this.db.ref("/users/" + user.uid).once("value")).val();
+    }
+    catch{
+        return null;
+    }
     let result = { challenges: [], history: [] };
     // Get own challenges
     let challengeID = Object.keys(this.challenges);
     for (let i = 0; i < challengeID.length; i++) {
         let challenge = this.challenges[challengeID[i]];
         if (challenge.ownerID == user.uid) {
-            result.challenges.push({ id: challengeID[i], title: challenge.title, description: challenge.shortDescription });
+            result.challenges.push({
+                id: challengeID[i],
+                title: challenge.title,
+                description: challenge.shortDescription
+            });
         }
     }
+
     //Get history
     let historyID = Object.keys(data.history);
     for (let i = 0; i < historyID.length; i++) {
         if (historyID[i] != "dummy") {
             let current = data.history[historyID[i]];
-            result.history.push({ challengeID: current.challengeID, execTime: current.execTime, languageID: current.languageID });
+            let challenge = this.challenges[historyID[i]];
+            let solution = "";
+            if (challenge != undefined && challenge.canViewSolution != undefined) {
+                solution = current.code;
+            }
+            result.history.push({
+                challengeID: current.challengeID,
+                execTime: current.execTime,
+                languageID: current.languageID,
+                solution: solution
+            });
         }
     }
 
