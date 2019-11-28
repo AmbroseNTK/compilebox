@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "dependencies": {
+    "ambrosentk-api-helper": "^1.0.0",
     "body-parser": "*",
     "exports": "*",
     "express": "4.*",

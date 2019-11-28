@@ -18,6 +18,7 @@ var firebaseApp = require('./firebase');
 var app = express();
 var server = http.createServer(app);
 var fs = require('fs');
+const apiHelper = require('ambrosentk-api-helper').create();
 
 var port = 8889;
 
@@ -239,6 +240,71 @@ app.post('/people/search', async (req, res) => {
 app.get('/people/list', async (req, res) => {
     let listUser = await firebase.getListPeople();
     res.send(listUser);
+});
+
+app.get('/competition', async (req, res) => {
+    let result = await apiHelper.validate(req.body, [
+        { link: "ownerId" },
+        { link: "name" },
+        { link: "shortDescription" },
+        { link: "description" },
+        { link: "expiredDate" },
+        { link: "duration" },
+        { link: "challenges" },
+        { link: "coverImage" },
+        { link: "medalImage" }
+    ]);
+    if (result.status) {
+        firebase.createCompetition(req.body);
+        res.send({ status: "success" });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
+    }
+});
+
+app.get('/competition/list', async (req, res) => {
+    let result = await apiHelper.validate(req.body, [
+        { link: "ownerId" }
+    ]);
+    if (result.status) {
+        res.send({ status: "success", data: (await firebase.getCompetitionList(req.body.ownerId)) });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
+    }
+});
+
+app.get('/competition/update', async (req, res) => {
+    let competition = null;
+    let result = await apiHelper.validate(req.body, [
+        {
+            link: "competitionId", process: async (competitionId) => {
+                competition = await firebase.getCompetitionById(competitionId);
+                return {
+                    status: (competition != null),
+                    failedMessage: "Competition does not exist"
+                }
+            }
+        },
+        {
+            link: "ownerId", process: async (ownerId) => {
+                return {
+                    status: (competition.ownerId == ownerId),
+                    failedMessage: "Permission denied"
+                }
+            }
+        }, {
+            link: "data"
+        }
+    ]);
+    if (result.status) {
+        await firebase.updateCompetition(req.body.competitionId, req.body.data);
+        res.send({ status: "success" });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
+    }
 });
 
 console.log("Listening at " + port);

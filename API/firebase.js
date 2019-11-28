@@ -189,4 +189,32 @@ FirebaseApp.prototype.getListPeople = async function () {
     }));
 }
 
+FirebaseApp.prototype.createCompetition = async function (data) {
+    await this.db.ref("competition/").push(data);
+}
+
+FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
+    let snapshot = (await this.db.ref("competition/").once("value")).val();
+    let result = [];
+    let keys = Object.keys(snapshot);
+    for (let i = 0; i < keys.length; i++) {
+        if (snapshot[keys[i]].ownerId == ownerId) {
+            result.push(snapshot[keys[i]]);
+        }
+    }
+    return result;
+}
+
+FirebaseApp.prototype.getCompetitionById = async function (competitionId) {
+    let data = (await this.db.ref("competition/" + competitionId).once("value")).val();
+    if (data != undefined) {
+        return data;
+    }
+    return null;
+}
+
+FirebaseApp.prototype.updateCompetition = async function (competitionId, data) {
+    let data = await this.db.ref("competition/" + competitionId).update(data);
+}
+
 module.exports = FirebaseApp;
