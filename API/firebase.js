@@ -214,7 +214,7 @@ FirebaseApp.prototype.getCompetitionById = async function (competitionId) {
 }
 
 FirebaseApp.prototype.updateCompetition = async function (competitionId, data) {
-    let data = await this.db.ref("competition/" + competitionId).update(data);
+    await this.db.ref("competition/" + competitionId).update(data);
 }
 
 module.exports = FirebaseApp;
