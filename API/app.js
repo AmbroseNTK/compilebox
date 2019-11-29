@@ -15,10 +15,12 @@ var arr = require('./compilers');
 var sandBox = require('./DockerSandbox');
 var bodyParser = require('body-parser');
 var firebaseApp = require('./firebase');
+const formidableMiddleware = require('express-formidable');
+
 var app = express();
 var server = http.createServer(app);
 var fs = require('fs');
-const apiHelper = require('ambrosentk-api-helper').create();
+const apiHelper = new (require('ambrosentk-api-helper').create)();
 
 var port = 8889;
 
@@ -31,6 +33,10 @@ const credentials = {
     cert: certificate,
     ca: ca
 };
+
+app.use(formidableMiddleware({
+    uploadDir: 'temp/'
+}));
 
 var httpsServer = https.createServer(credentials, app);
 
@@ -242,7 +248,11 @@ app.get('/people/list', async (req, res) => {
     res.send(listUser);
 });
 
-app.get('/competition', async (req, res) => {
+app.post('/competition', async (req, res) => {
+
+    console.log(req.fields);
+    console.log(req.files);
+
     let result = await apiHelper.validate(req.body, [
         { link: "ownerId" },
         { link: "name" },

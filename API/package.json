@@ -8,7 +8,9 @@
     "exports": "*",
     "express": "4.*",
     "express-brute": "*",
+    "express-formidable": "^1.2.0",
     "firebase-admin": "^8.0.0",
+    "formidable": "^1.2.1",
     "install": "^0.12.2",
     "npm": "^6.9.0",
     "request": "^2.88.0"
