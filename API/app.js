@@ -251,7 +251,7 @@ app.get('/people/list', async (req, res) => {
 app.post('/competition', async (req, res) => {
 
     console.log(req.fields);
-    console.log(req.files);
+    //console.log(req.files);
 
     let result = await apiHelper.validate(req.body, [
         { link: "ownerId" },
