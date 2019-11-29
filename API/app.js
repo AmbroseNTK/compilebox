@@ -248,24 +248,32 @@ app.get('/people/list', async (req, res) => {
     res.send(listUser);
 });
 
+
+
 app.post('/competition', async (req, res) => {
 
     console.log(req.fields);
     //console.log(req.files);
 
-    let result = await apiHelper.validate(req.body, [
+    let result = await apiHelper.validate(req.fields, [
         { link: "ownerId" },
         { link: "name" },
         { link: "shortDescription" },
         { link: "description" },
-        { link: "expiredDate" },
-        { link: "duration" },
-        { link: "challenges" },
-        { link: "coverImage" },
-        { link: "medalImage" }
+        {
+            link: "challenges", process: (challenges) => {
+                let ownChallenges = firebase.getOwnChallenge(req.fields.ownerId);
+                for (let i = 0; i < challenges.length; i++) {
+                    if (!ownChallenges.includes(challenges[i].id)) {
+                        return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
+                    }
+                }
+                return { status: true };
+            }
+        },
     ]);
     if (result.status) {
-        firebase.createCompetition(req.body);
+        firebase.createCompetition(req.fields);
         res.send({ status: "success" });
     }
     else {

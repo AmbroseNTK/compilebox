@@ -217,4 +217,15 @@ FirebaseApp.prototype.updateCompetition = async function (competitionId, data) {
     await this.db.ref("competition/" + competitionId).update(data);
 }
 
+FirebaseApp.prototype.getOwnChallenge = function (ownerId) {
+    let result = [];
+    let keys = Object.keys(this.challenges);
+    for (let i = 0; i < keys.length; i++) {
+        if (this.challenges[keys[i]].ownerID == ownerId) {
+            result.push(this.challenges[keys[i]]);
+        }
+    }
+    return result;
+}
+
 module.exports = FirebaseApp;
