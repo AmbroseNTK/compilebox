@@ -276,7 +276,10 @@ app.post('/competition/new', async (req, res) => {
             {
                 link: "id", process: async (id) => {
                     let competitions = await firebase.getCompetitionIDList();
-                    return { status: (id != "" && !competitions.includes(id)), failedMessage: id + " already existed" }
+                    if (id != "" && !competitions.includes(id)) {
+                        return { status: true };
+                    }
+                    return { status: false, message: id + " already existed" }
                 }
             },
             { link: "ownerId" },
