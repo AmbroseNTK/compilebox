@@ -248,6 +248,14 @@ app.get('/people/list', async (req, res) => {
     res.send(listUser);
 });
 
+function jsonToArray(json) {
+    let keys = Object.keys(json);
+    let array = [];
+    for (let i = 0; i < keys.length; i++) {
+        array.push(json[keys[i]]);
+    }
+    return array;
+}
 
 
 app.post('/competition', async (req, res) => {
@@ -267,7 +275,8 @@ app.post('/competition', async (req, res) => {
         { link: "shortDescription" },
         { link: "description" },
         {
-            link: "challenges", process: (challenges) => {
+            link: "challenges", process: (challengesText) => {
+                let challenge = jsonToArray(JSON.parse(challengesText));
                 let ownChallenges = firebase.getOwnChallenge(req.fields.ownerId);
                 for (let i = 0; i < challenges.length; i++) {
                     if (!ownChallenges.includes(challenges[i].id)) {
