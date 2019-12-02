@@ -266,7 +266,7 @@ function jsonToArray(json) {
 app.post('/competition/new', async (req, res) => {
 
     let form = new formidable.IncomingForm();
-    form.parse(req, (fields, files) => {
+    form.parse(req, async (fields, files) => {
 
         console.log(fields);
         //console.log(req.files);
