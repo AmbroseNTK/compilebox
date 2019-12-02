@@ -394,7 +394,7 @@ app.post('/competition/update', async (req, res) => {
                     res.send({ status: "success" });
                 }
                 catch (e) {
-                    res.send({ status: "failed", message: e });
+                    res.send({ status: "failed", message: e.message });
                 }
             }
             else {
