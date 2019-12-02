@@ -297,7 +297,7 @@ app.post('/competition', async (req, res) => {
     }
 });
 
-app.get('/competition/list', async (req, res) => {
+app.post('/competition/list', async (req, res) => {
     let result = await apiHelper.validate(req.body, [
         { link: "ownerId" }
     ]);
