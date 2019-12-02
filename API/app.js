@@ -377,7 +377,9 @@ app.post('/competition/update', async (req, res) => {
                 await firebase.updateCompetition(fields.id, fields);
 
                 try {
-                    await fs.mkdirSync("images/" + fields.id + "/");
+                    if (!(await fs.existsSync("images/" + fields.id))) {
+                        await fs.mkdirSync("images/" + fields.id + "/");
+                    }
                     if (files['coverImage'] != null) {
                         let isExisted = await fs.existsSync("images/" + fields.id + "/coverImage");
                         if (isExisted) {
