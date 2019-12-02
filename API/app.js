@@ -304,7 +304,8 @@ app.post('/competition/list', async (req, res) => {
         { link: "ownerId" }
     ]);
     if (result.status) {
-        res.send({ status: "success", data: (await firebase.getCompetitionList(req.body.ownerId)) });
+        let data = await firebase.getCompetitionList(req.body.ownerId)
+        res.send({ status: "success", data: data });
     }
     else {
         res.send({ status: "failed", message: result.message });
