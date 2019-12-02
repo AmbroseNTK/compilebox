@@ -303,7 +303,7 @@ app.post('/competition/new', async (req, res) => {
             },
         ]);
         if (result.status) {
-            firebase.createCompetition(fields);
+            firebase.createCompetition({ ...fields, isPublished: false });
             try {
                 await fs.mkdirSync("images/" + fields.id + "/");
                 if (files['coverImage'] != null) {
@@ -373,8 +373,8 @@ app.post('/competition/update', async (req, res) => {
             },
         ]);
         if (result.status) {
-            if (req.body.data.isPublished == false) {
-                await firebase.updateCompetition(req.body.competitionId, req.body.data);
+            if (fields.isPublished == false) {
+                await firebase.updateCompetition(fields.id, fields);
 
                 try {
                     await fs.mkdirSync("images/" + fields.id + "/");
