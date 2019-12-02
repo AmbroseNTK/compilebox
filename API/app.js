@@ -333,8 +333,13 @@ app.get('/competition/update', async (req, res) => {
         }
     ]);
     if (result.status) {
-        await firebase.updateCompetition(req.body.competitionId, req.body.data);
-        res.send({ status: "success" });
+        if (req.body.data.isPublished == false) {
+            await firebase.updateCompetition(req.body.competitionId, req.body.data);
+            res.send({ status: "success" });
+        }
+        else {
+            res.send({ status: "failed", message: "Cannot update published competition" });
+        }
     }
     else {
         res.send({ status: "failed", message: result.message });
