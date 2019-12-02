@@ -5,6 +5,7 @@
   "dependencies": {
     "ambrosentk-api-helper": "^1.0.0",
     "body-parser": "*",
+    "cors": "^2.8.5",
     "exports": "*",
     "express": "4.*",
     "express-brute": "*",

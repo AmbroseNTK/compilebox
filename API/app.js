@@ -38,6 +38,8 @@ app.use(formidableMiddleware({
     uploadDir: 'temp/'
 }));
 
+app.use(require('cors')());
+
 var httpsServer = https.createServer(credentials, app);
 
 var ExpressBrute = require('express-brute');
