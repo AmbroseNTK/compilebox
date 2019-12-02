@@ -56,7 +56,7 @@ var firebase = new firebaseApp();
 
 //app.use(express.static(__dirname));
 app.use(express.static(__dirname, { dotfiles: 'allow' }));
-app.use(bodyParser());
+app.use(require('body-parser').urlencoded({ extended: false }));
 
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
