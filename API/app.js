@@ -338,9 +338,22 @@ app.post('/competition/update', async (req, res) => {
 
         let result = await apiHelper.validate(fields, [
             {
-                link: "id"
+                link: "id", process: async (competitionId) => {
+                    competition = await firebase.getCompetitionById(competitionId);
+                    return {
+                        status: (competition != null),
+                        failedMessage: "Competition does not exist"
+                    }
+                }
             },
-            { link: "ownerId" },
+            {
+                link: "ownerId", process: async (ownerId) => {
+                    return {
+                        status: (competition.ownerId == ownerId),
+                        failedMessage: "Permission denied"
+                    }
+                }
+            },
             { link: "name" },
             { link: "shortDescription" },
             { link: "description" },
@@ -360,20 +373,26 @@ app.post('/competition/update', async (req, res) => {
             },
         ]);
         if (result.status) {
-            firebase.updateCompetition(fields);
-            try {
-                await fs.mkdirSync("images/" + fields.id + "/");
-                if (files['coverImage'] != null) {
-                    await fs.renameSync(files['coverImage'].path, "images/" + fields.id + "/coverImage");
-                }
-                if (files['medalIcon'] != null) {
-                    await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
-                }
+            if (req.body.data.isPublished == false) {
+                await firebase.updateCompetition(req.body.competitionId, req.body.data);
 
-                res.send({ status: "success" });
+                try {
+                    await fs.mkdirSync("images/" + fields.id + "/");
+                    if (files['coverImage'] != null) {
+                        await fs.renameSync(files['coverImage'].path, "images/" + fields.id + "/coverImage");
+                    }
+                    if (files['medalIcon'] != null) {
+                        await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
+                    }
+
+                    res.send({ status: "success" });
+                }
+                catch (e) {
+                    res.send({ status: "failed", message: "Cannot upload images" });
+                }
             }
-            catch (e) {
-                res.send({ status: "failed", message: "Cannot upload images" });
+            else {
+                res.send({ status: "failed", message: "Cannot update published competition" });
             }
         }
         else {
@@ -399,34 +418,12 @@ app.post('/competition/list', async (req, res) => {
 app.get('/competition/update', async (req, res) => {
     let competition = null;
     let result = await apiHelper.validate(req.body, [
-        {
-            link: "competitionId", process: async (competitionId) => {
-                competition = await firebase.getCompetitionById(competitionId);
-                return {
-                    status: (competition != null),
-                    failedMessage: "Competition does not exist"
-                }
-            }
-        },
-        {
-            link: "ownerId", process: async (ownerId) => {
-                return {
-                    status: (competition.ownerId == ownerId),
-                    failedMessage: "Permission denied"
-                }
-            }
-        }, {
+        , {
             link: "data"
         }
     ]);
     if (result.status) {
-        if (req.body.data.isPublished == false) {
-            await firebase.updateCompetition(req.body.competitionId, req.body.data);
-            res.send({ status: "success" });
-        }
-        else {
-            res.send({ status: "failed", message: "Cannot update published competition" });
-        }
+
     }
     else {
         res.send({ status: "failed", message: result.message });
