@@ -190,7 +190,7 @@ FirebaseApp.prototype.getListPeople = async function () {
 }
 
 FirebaseApp.prototype.createCompetition = async function (data) {
-    await this.db.ref("competition/").push(data);
+    await this.db.ref("competition/" + data.id).set(data);
 }
 
 FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
@@ -203,6 +203,11 @@ FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
         }
     }
     return result;
+}
+
+FirebaseApp.prototype.getCompetitionIDList = async function () {
+    let snapshot = (await this.db.ref("competition/").once("value")).val()
+    return Object.keys(snapshot);
 }
 
 FirebaseApp.prototype.getCompetitionById = async function (competitionId) {

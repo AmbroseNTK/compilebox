@@ -256,6 +256,12 @@ app.post('/competition', async (req, res) => {
     //console.log(req.files);
 
     let result = await apiHelper.validate(req.fields, [
+        {
+            link: "id", process: async (id) => {
+                let competitions = await firebase.getCompetitionIDList();
+                return { status: !competitions.includes(id), failedMessage: id + " already existed" }
+            }
+        },
         { link: "ownerId" },
         { link: "name" },
         { link: "shortDescription" },
