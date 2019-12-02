@@ -16,6 +16,7 @@ var sandBox = require('./DockerSandbox');
 var bodyParser = require('body-parser');
 var firebaseApp = require('./firebase');
 const formidableMiddleware = require('express-formidable');
+const formidable = require('formidable');
 
 var app = express();
 var server = http.createServer(app);
@@ -34,9 +35,11 @@ const credentials = {
     ca: ca
 };
 
+/**
 app.use(formidableMiddleware({
     uploadDir: 'temp/'
 }));
+*/
 
 app.use(require('cors')());
 
@@ -262,41 +265,46 @@ function jsonToArray(json) {
 
 app.post('/competition/new', async (req, res) => {
 
-    console.log(req.fields);
-    //console.log(req.files);
+    let form = new formidable.IncomingForm();
+    form.parse(req, (fields, files) => {
 
-    let result = await apiHelper.validate(req.fields, [
-        {
-            link: "id", process: async (id) => {
-                let competitions = await firebase.getCompetitionIDList();
-                return { status: (id != "" && !competitions.includes(id)), failedMessage: id + " already existed" }
-            }
-        },
-        { link: "ownerId" },
-        { link: "name" },
-        { link: "shortDescription" },
-        { link: "description" },
-        {
-            link: "challenges", process: (challengesText) => {
-                let challenges = jsonToArray(JSON.parse(challengesText));
-                req.fields.challenges = challenges;
-                let ownChallenges = firebase.getOwnChallenge(req.fields.ownerId);
-                for (let i = 0; i < challenges.length; i++) {
-                    if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
-                        return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
-                    }
+        console.log(fields);
+        //console.log(req.files);
+
+        let result = await apiHelper.validate(fields, [
+            {
+                link: "id", process: async (id) => {
+                    let competitions = await firebase.getCompetitionIDList();
+                    return { status: (id != "" && !competitions.includes(id)), failedMessage: id + " already existed" }
                 }
-                return { status: true };
-            }
-        },
-    ]);
-    if (result.status) {
-        firebase.createCompetition(req.fields);
-        res.send({ status: "success" });
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
-    }
+            },
+            { link: "ownerId" },
+            { link: "name" },
+            { link: "shortDescription" },
+            { link: "description" },
+            {
+                link: "challenges", process: (challengesText) => {
+                    let challenges = jsonToArray(JSON.parse(challengesText));
+                    fields.challenges = challenges;
+                    let ownChallenges = firebase.getOwnChallenge(fields.ownerId);
+                    for (let i = 0; i < challenges.length; i++) {
+                        if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
+                            return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
+                        }
+                    }
+                    return { status: true };
+                }
+            },
+        ]);
+        if (result.status) {
+            firebase.createCompetition(fields);
+            res.send({ status: "success" });
+        }
+        else {
+            res.send({ status: "failed", message: result.message });
+        }
+    })
+
 });
 
 app.post('/competition/list', async (req, res) => {
