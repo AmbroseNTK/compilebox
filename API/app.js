@@ -394,7 +394,7 @@ app.post('/competition/update', async (req, res) => {
                     res.send({ status: "success" });
                 }
                 catch (e) {
-                    res.send({ status: "failed", message: "Cannot upload images" });
+                    res.send({ status: "failed", message: e });
                 }
             }
             else {
