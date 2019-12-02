@@ -298,6 +298,7 @@ app.post('/competition/new', async (req, res) => {
             },
         ]);
         if (result.status) {
+            console.log(fields);
             firebase.createCompetition(fields);
             res.send({ status: "success" });
         }
