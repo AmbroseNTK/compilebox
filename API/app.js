@@ -288,8 +288,6 @@ app.post('/competition/new', async (req, res) => {
             { link: "description" },
             { link: "expiredDate" },
             { link: "duration" },
-            { link: "coverImage" },
-            { link: "medalIcon" },
             {
                 link: "challenges", process: (challengesText) => {
                     let challenges = jsonToArray(JSON.parse(challengesText));
