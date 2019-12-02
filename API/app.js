@@ -270,7 +270,7 @@ app.post('/competition/new', async (req, res) => {
     form.uploadDir = "temp/";
     form.parse(req, async (err, fields, files) => {
 
-        console.log(files[0]);
+        console.log(files["coverImage"]);
 
         let result = await apiHelper.validate(fields, [
             {
