@@ -279,14 +279,13 @@ app.post('/competition/new', async (req, res) => {
                     if (id != "" && !competitions.includes(id)) {
                         return { status: true };
                     }
-                    return { status: false, message: id + " already existed" }
+                    return { status: false, failedMessage: id + " already existed" }
                 }
             },
             { link: "ownerId" },
             { link: "name" },
             { link: "shortDescription" },
             { link: "description" },
-            { link: "expiredDate" },
             { link: "duration" },
             {
                 link: "challenges", process: (challengesText) => {
