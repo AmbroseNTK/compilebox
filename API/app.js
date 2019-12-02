@@ -279,7 +279,7 @@ app.post('/competition', async (req, res) => {
                 let challenges = jsonToArray(JSON.parse(challengesText));
                 let ownChallenges = firebase.getOwnChallenge(req.fields.ownerId);
                 for (let i = 0; i < challenges.length; i++) {
-                    if (!ownChallenges.includes(challenges[i].id)) {
+                    if (ownChallenges.findIndex((entry) => entry.id == challenges[i].id) == -1) {
                         return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
                     }
                 }
