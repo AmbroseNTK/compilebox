@@ -196,16 +196,18 @@ FirebaseApp.prototype.createCompetition = async function (data) {
 
 FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
     let snapshot = (await this.db.ref("competition/").once("value")).val();
-    console.log(snapshot);
     let result = [];
-    if (snapshot != null || snapshot != undefined) {
+    try {
         let keys = Object.keys(snapshot);
+        console.log(keys);
         for (let i = 0; i < keys.length; i++) {
             if (snapshot[keys[i]].ownerId == ownerId) {
                 result.push(snapshot[keys[i]]);
             }
         }
     }
+
+    catch (e) { }
     return result;
 }
 
