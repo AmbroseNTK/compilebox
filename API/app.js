@@ -379,9 +379,15 @@ app.post('/competition/update', async (req, res) => {
                 try {
                     await fs.mkdirSync("images/" + fields.id + "/");
                     if (files['coverImage'] != null) {
+                        if ((await fs.existsSync("images/" + fields.id + "/coverImage"))) {
+                            await fs.unlinkSync("images/" + fields.id + "/coverImage");
+                        }
                         await fs.renameSync(files['coverImage'].path, "images/" + fields.id + "/coverImage");
                     }
                     if (files['medalIcon'] != null) {
+                        if ((await fs.existsSync("images/" + fields.id + "/medalIcon"))) {
+                            await fs.unlinkSync("images/" + fields.id + "/medalIcon");
+                        }
                         await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
                     }
 
