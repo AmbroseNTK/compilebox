@@ -199,8 +199,8 @@ FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
     let result = [];
     try {
         let keys = Object.keys(snapshot);
-        console.log(keys);
         for (let i = 0; i < keys.length; i++) {
+            console.log(snapshot[keys[i]].ownerId)
             if (snapshot[keys[i]].ownerId == ownerId) {
                 result.push(snapshot[keys[i]]);
             }
