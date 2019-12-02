@@ -373,7 +373,7 @@ app.post('/competition/update', async (req, res) => {
             },
         ]);
         if (result.status) {
-            if (fields.isPublished == false) {
+            if (fields.isPublished == 'false') {
                 await firebase.updateCompetition(fields.id, fields);
 
                 try {
