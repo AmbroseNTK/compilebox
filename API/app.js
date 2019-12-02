@@ -270,8 +270,7 @@ app.post('/competition/new', async (req, res) => {
     form.uploadDir = "temp/";
     form.parse(req, async (err, fields, files) => {
 
-        console.log(fields);
-        //console.log(req.files);
+        console.log(files);
 
         let result = await apiHelper.validate(fields, [
             {
@@ -282,6 +281,50 @@ app.post('/competition/new', async (req, res) => {
                     }
                     return { status: false, failedMessage: id + " already existed" }
                 }
+            },
+            { link: "ownerId" },
+            { link: "name" },
+            { link: "shortDescription" },
+            { link: "description" },
+            { link: "duration" },
+            {
+                link: "challenges", process: (challengesText) => {
+                    let challenges = jsonToArray(JSON.parse(challengesText));
+                    fields.challenges = challenges;
+                    let ownChallenges = firebase.getOwnChallenge(fields.ownerId);
+                    for (let i = 0; i < challenges.length; i++) {
+                        if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
+                            return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
+                        }
+                    }
+                    return { status: true };
+                }
+            },
+        ]);
+        if (result.status) {
+            firebase.createCompetition(fields);
+            res.send({ status: "success" });
+        }
+        else {
+            res.send({ status: "failed", message: result.message });
+        }
+    })
+
+});
+
+
+app.post('/competition/update', async (req, res) => {
+
+    let form = new formidable.IncomingForm();
+    form.uploadDir = "temp/";
+    form.parse(req, async (err, fields, files) => {
+
+        console.log(fields);
+        //console.log(req.files);
+
+        let result = await apiHelper.validate(fields, [
+            {
+                link: "id"
             },
             { link: "ownerId" },
             { link: "name" },
