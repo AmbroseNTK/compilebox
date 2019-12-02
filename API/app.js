@@ -283,6 +283,10 @@ app.post('/competition/new', async (req, res) => {
             { link: "name" },
             { link: "shortDescription" },
             { link: "description" },
+            { link: "expiredDate" },
+            { link: "duration" },
+            { link: "coverImage" },
+            { link: "medalIcon" },
             {
                 link: "challenges", process: (challengesText) => {
                     let challenges = jsonToArray(JSON.parse(challengesText));
@@ -298,7 +302,6 @@ app.post('/competition/new', async (req, res) => {
             },
         ]);
         if (result.status) {
-            console.log(fields);
             firebase.createCompetition(fields);
             res.send({ status: "success" });
         }
