@@ -425,6 +425,30 @@ app.post('/competition/list', async (req, res) => {
     }
 });
 
+app.post('/competition/delete', async (req, res) => {
+    let result = await apiHelper.validate(req.body, [
+        {
+            link: "id", process: (id) => {
+                if (id != "" || id != undefined) {
+                    return { status: true };
+                }
+                return { status: false, failedMessage: id + " is invalid" };
+            }
+        },
+        {
+            link: "ownerId", process: async (ownerId) => {
+                let competition = await firebase.getCompetitionById(req.body.id);
+                if (competition.ownerId == ownerId) {
+                    return { status: true };
+                }
+                return { status: false, failedMessage: "Permission denied" };
+            }
+        }
+    ]);
+    if (result.status) {
+        firebase.removeCompetition(req.body.id);
+    }
+})
 
 app.get("/resources/images/competition/:competitionId/:fileName", (req, res) => {
     let competitionId = req.params.competitionId;

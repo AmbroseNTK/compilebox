@@ -232,6 +232,10 @@ FirebaseApp.prototype.updateCompetition = async function (competitionId, data) {
     await this.db.ref("competition/" + competitionId).update(data);
 }
 
+FirebaseApp.prototype.removeCompetition = async function (competitionId) {
+    await this.db.ref("competition/" + competitionId).remove();
+}
+
 FirebaseApp.prototype.getOwnChallenge = function (ownerId) {
     let result = [];
     let keys = Object.keys(this.challenges);
