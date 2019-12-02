@@ -209,7 +209,10 @@ FirebaseApp.prototype.getCompetitionList = async function (ownerId) {
 }
 
 FirebaseApp.prototype.getCompetitionIDList = async function () {
-    let snapshot = (await this.db.ref("competition/").once("value")).val()
+    let snapshot = (await this.db.ref("competition/").once("value")).val();
+    if (snapshot == undefined || snapshot == null) {
+        return [];
+    }
     return Object.keys(snapshot);
 }
 
