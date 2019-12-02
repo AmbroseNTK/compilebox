@@ -190,6 +190,7 @@ FirebaseApp.prototype.getListPeople = async function () {
 }
 
 FirebaseApp.prototype.createCompetition = async function (data) {
+    console.log(data);
     await this.db.ref("competition/" + data.id).set(data);
 }
 
