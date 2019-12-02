@@ -424,7 +424,7 @@ app.get("/resources/images/competition/:competitionId/:fileName", (req, res) => 
     let competitionId = req.params.competitionId;
     let fileName = req.params.fileName;
     console.log(req.params);
-    res.download(__dirname + "/images/" + competitionId + "/" + fileName);
+    res.download(__dirname + ".." + "/images/" + competitionId + "/" + fileName);
 })
 
 console.log("Listening at " + port);
