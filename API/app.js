@@ -447,6 +447,10 @@ app.post('/competition/delete', async (req, res) => {
     ]);
     if (result.status) {
         firebase.removeCompetition(req.body.id);
+        res.send({ status: "success" });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
     }
 })
 
