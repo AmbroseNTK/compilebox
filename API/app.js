@@ -420,7 +420,7 @@ app.get('/competition/update', async (req, res) => {
     }
 });
 
-app.get("resources/images/competition/:competitionId/:fileName", (req, res) => {
+app.get("/resources/images/competition/:competitionId/:fileName", (req, res) => {
     let competitionId = req.params.competitionId;
     let fileName = req.params.fileName;
     console.log(req.params);
