@@ -415,20 +415,6 @@ app.post('/competition/list', async (req, res) => {
     }
 });
 
-app.get('/competition/update', async (req, res) => {
-    let competition = null;
-    let result = await apiHelper.validate(req.body, [
-        , {
-            link: "data"
-        }
-    ]);
-    if (result.status) {
-
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
-    }
-});
 
 app.get("/resources/images/competition/:competitionId/:fileName", (req, res) => {
     let competitionId = req.params.competitionId;
