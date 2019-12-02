@@ -15,6 +15,7 @@ var arr = require('./compilers');
 var sandBox = require('./DockerSandbox');
 var bodyParser = require('body-parser');
 var firebaseApp = require('./firebase');
+
 const formidableMiddleware = require('express-formidable');
 const formidable = require('formidable');
 
@@ -303,7 +304,20 @@ app.post('/competition/new', async (req, res) => {
         ]);
         if (result.status) {
             firebase.createCompetition(fields);
-            res.send({ status: "success" });
+            try {
+                await fs.mkdirSync("images/" + fields.id + "/");
+                if (files['coverImage'] != null) {
+                    await fs.renameSync(files['coverImage'].path, "images/" + fields.id + "/coverImage");
+                }
+                if (files['medalIcon'] != null) {
+                    await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
+                }
+
+                res.send({ status: "success" });
+            }
+            catch (e) {
+                res.send({ status: "failed", message: "Cannot upload images" });
+            }
         }
         else {
             res.send({ status: "failed", message: result.message });
@@ -405,6 +419,12 @@ app.get('/competition/update', async (req, res) => {
         res.send({ status: "failed", message: result.message });
     }
 });
+
+app.get("resources/images/competition/:competitionId/:fileName", (req, res) => {
+    let competitionId = req.params.competitionId;
+    let fileName = req.params.fileName;
+    res.download("images/" + competitionId + "/" + fileName);
+})
 
 console.log("Listening at " + port);
 //server.listen(port);

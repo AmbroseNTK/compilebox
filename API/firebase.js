@@ -10,6 +10,7 @@ var FirebaseApp = function () {
 
     let db = app.database();
 
+
     db.ref("challenges/").on("value", (snapshot) => {
         this.challenges = snapshot.val();
         console.log("Reloaded challenges");
@@ -240,6 +241,10 @@ FirebaseApp.prototype.getOwnChallenge = function (ownerId) {
         }
     }
     return result;
+}
+
+FirebaseApp.prototype.uploadFile = function (file) {
+
 }
 
 module.exports = FirebaseApp;
