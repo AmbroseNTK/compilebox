@@ -230,6 +230,7 @@ FirebaseApp.prototype.getOwnChallenge = function (ownerId) {
             result.push(this.challenges[keys[i]]);
         }
     }
+    console.log(result);
     return result;
 }
 
