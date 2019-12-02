@@ -277,6 +277,7 @@ app.post('/competition', async (req, res) => {
         {
             link: "challenges", process: (challengesText) => {
                 let challenges = jsonToArray(JSON.parse(challengesText));
+                req.fields.challenges = challenges;
                 let ownChallenges = firebase.getOwnChallenge(req.fields.ownerId);
                 for (let i = 0; i < challenges.length; i++) {
                     if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
