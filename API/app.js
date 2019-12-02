@@ -260,7 +260,7 @@ function jsonToArray(json) {
 }
 
 
-app.post('/competition', async (req, res) => {
+app.post('/competition/new', async (req, res) => {
 
     console.log(req.fields);
     //console.log(req.files);
@@ -269,7 +269,7 @@ app.post('/competition', async (req, res) => {
         {
             link: "id", process: async (id) => {
                 let competitions = await firebase.getCompetitionIDList();
-                return { status: !competitions.includes(id), failedMessage: id + " already existed" }
+                return { status: (id != "" && !competitions.includes(id)), failedMessage: id + " already existed" }
             }
         },
         { link: "ownerId" },
