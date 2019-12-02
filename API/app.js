@@ -360,8 +360,21 @@ app.post('/competition/update', async (req, res) => {
             },
         ]);
         if (result.status) {
-            firebase.createCompetition(fields);
-            res.send({ status: "success" });
+            firebase.updateCompetition(fields);
+            try {
+                await fs.mkdirSync("images/" + fields.id + "/");
+                if (files['coverImage'] != null) {
+                    await fs.renameSync(files['coverImage'].path, "images/" + fields.id + "/coverImage");
+                }
+                if (files['medalIcon'] != null) {
+                    await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
+                }
+
+                res.send({ status: "success" });
+            }
+            catch (e) {
+                res.send({ status: "failed", message: "Cannot upload images" });
+            }
         }
         else {
             res.send({ status: "failed", message: result.message });
