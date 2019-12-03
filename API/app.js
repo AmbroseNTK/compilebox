@@ -333,9 +333,6 @@ app.post('/competition/update', async (req, res) => {
     form.uploadDir = "temp/";
     form.parse(req, async (err, fields, files) => {
 
-        console.log(fields);
-        //console.log(req.files);
-
         let result = await apiHelper.validate(fields, [
             {
                 link: "id", process: async (competitionId) => {
@@ -453,6 +450,60 @@ app.post('/competition/delete', async (req, res) => {
         res.send({ status: "failed", message: result.message });
     }
 })
+
+async function checkCompetitionPermission(req) {
+    let result = await apiHelper.validate(req.body, [
+        {
+            link: "id", process: async (id) => {
+                let competitionList = await firebase.getCompetitionIDList();
+                if (competitionList.includes(id)) {
+                    return { status: true };
+                }
+                return { status: false, failedMessage: id + " not found" };
+            }
+        },
+        {
+            link: "ownerId", process: async (ownerId) => {
+                let competition = await firebase.getCompetitionById(req.body.id);
+                if (competition.ownerId == ownerId) {
+                    return { status: true };
+                }
+                return { status: false, failedMessage: "Permission denied" };
+            }
+        }, {
+            link: "emailList", process: (emailList) => {
+                if (emailList == undefined) {
+                    return { status: false, failedMessage: "Email list is invalid" };
+                }
+                return { status: true };
+            }
+        }
+    ]);
+    return result;
+}
+
+app.post("/competition/invitation/invite", async (req, res) => {
+
+    let result = await checkCompetitionPermission(req);
+    if (result.status) {
+        firebase.inviteToCompetition(req.body.id, req.body.emailList);
+        res.send({ status: "success" });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
+    }
+});
+
+app.post("/competition/invitation/list", async (req, res) => {
+    let result = await checkCompetitionPermission(req);
+    if (result.status) {
+        let data = await firebase.getCompetitionInviteList(req.body.id);
+        res.send({ status: "success", data: data });
+    }
+    else {
+        res.send({ status: "failed", message: result.message });
+    }
+});
 
 app.get("/resources/images/competition/:competitionId/:fileName", (req, res) => {
     let competitionId = req.params.competitionId;

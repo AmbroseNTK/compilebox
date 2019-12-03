@@ -247,6 +247,14 @@ FirebaseApp.prototype.getOwnChallenge = function (ownerId) {
     return result;
 }
 
+FirebaseApp.prototype.inviteToCompetition = async function (id, emailList) {
+    await this.db.ref("competition/" + id + "/invitation/").set(emailList);
+}
+
+FirebaseApp.prototype.getCompetitionInviteList = async function (id) {
+    return (await this.db.ref("competition/" + id + "/invitation").once("value"));
+}
+
 FirebaseApp.prototype.uploadFile = function (file) {
 
 }
