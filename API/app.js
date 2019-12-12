@@ -87,7 +87,7 @@ function compile(obj) {
     return new sandBox(timeout_value, path, folder, vm_name, arr.compilerArray[language][0], arr.compilerArray[language][1], code, arr.compilerArray[language][2], arr.compilerArray[language][3], arr.compilerArray[language][4], stdin);
 }
 
-app.post('/compile', bruteforce.prevent, function (req, res) {
+app.post('/compile', function (req, res) {
     compile(req.body).run(function (data, exec_time, err) {
         //console.log("Data: received: "+ data)
         res.send({ output: data, errors: err, time: exec_time });
