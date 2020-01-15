@@ -1,9 +1,9 @@
 /*
-        *File: app.js
-        *Author: Asad Memon / Osman Ali Mian / Nguyen Tuan Kiet
-        *Last Modified: 5th June 2014
-        *Revised on: 30th June 2014 (Introduced Express-Brute for Bruteforce protection)
-*/
+ *File: app.js
+ *Author: Asad Memon / Osman Ali Mian / Nguyen Tuan Kiet
+ *Last Modified: 5th June 2014
+ *Revised on: 30th June 2014 (Introduced Express-Brute for Bruteforce protection)
+ */
 
 
 
@@ -22,13 +22,13 @@ const formidable = require('formidable');
 var app = express();
 var server = http.createServer(app);
 var fs = require('fs');
-const apiHelper = new (require('ambrosentk-api-helper').create)();
+const apiHelper = new(require('ambrosentk-api-helper').create)();
 
-var port = 8889;
+var port = 8989;
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/chain.pem', 'utf8');
+const privateKey = "" //fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/privkey.pem', 'utf8');
+const certificate = "" //fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/cert.pem', 'utf8');
+const ca = "" //fs.readFileSync('/etc/letsencrypt/live/pm.itsstraining.edu.vn/chain.pem', 'utf8');
 
 const credentials = {
     key: privateKey,
@@ -44,7 +44,7 @@ app.use(formidableMiddleware({
 
 app.use(require('cors')());
 
-var httpsServer = https.createServer(credentials, app);
+var httpsServer = http.createServer(app);
 
 var ExpressBrute = require('express-brute');
 var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production
@@ -56,7 +56,9 @@ var bruteforce = new ExpressBrute(store, {
 var firebase = new firebaseApp();
 
 //app.use(express.static(__dirname));
-app.use(express.static(__dirname, { dotfiles: 'allow' }));
+app.use(express.static(__dirname, {
+    dotfiles: 'allow'
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
@@ -81,7 +83,7 @@ function compile(obj) {
     var folder = 'temp/' + random(10); //folder in which the temporary folder will be saved
     var path = __dirname + "/"; //current working path
     var vm_name = 'virtual_machine'; //name of virtual machine that we want to execute
-    var timeout_value = 300;//Timeout Value, In Seconds
+    var timeout_value = 300; //Timeout Value, In Seconds
 
     //details of this are present in DockerSandbox.js
     return new sandBox(timeout_value, path, folder, vm_name, arr.compilerArray[language][0], arr.compilerArray[language][1], code, arr.compilerArray[language][2], arr.compilerArray[language][3], arr.compilerArray[language][4], stdin);
@@ -90,14 +92,22 @@ function compile(obj) {
 app.post('/compile', function (req, res) {
     compile(req.body).run(function (data, exec_time, err) {
         //console.log("Data: received: "+ data)
-        res.send({ output: data, errors: err, time: exec_time });
+        res.send({
+            output: data,
+            errors: err,
+            time: exec_time
+        });
     });
 });
 
 function onFinishTask(obj, res) {
     if (obj.finished == obj.testCases.length) {
         firebase.writeHistory(obj);
-        res.send({ type: "success", passed: obj.finished, time: obj.execTime });
+        res.send({
+            type: "success",
+            passed: obj.finished,
+            time: obj.execTime
+        });
     }
 }
 
@@ -117,16 +127,22 @@ function runWithTests(obj, res) {
                 obj.execTime += parseFloat(exec_time.trim());
                 obj.finished++;
                 onFinishTask(obj, res);
-            }
-            else {
+            } else {
                 if (!res.headersSent) {
-                    res.send({ type: "failed", id: i, time: obj.execTime, output: data });
+                    res.send({
+                        type: "failed",
+                        id: i,
+                        time: obj.execTime,
+                        output: data
+                    });
                 }
             }
-        }
-        else {
+        } else {
             if (!res.headersSent) {
-                res.send({ type: "error", error: err });
+                res.send({
+                    type: "error",
+                    error: err
+                });
             }
         }
     });
@@ -160,17 +176,23 @@ app.post('/submit', bruteforce.prevent, async function (req, res) {
                     obj['index'] = i;
                     runWithTests(obj, res);
                 }
+            } else {
+                res.send({
+                    type: "error",
+                    message: "No testcases"
+                });
             }
-            else {
-                res.send({ type: "error", message: "No testcases" });
-            }
+        } else {
+            res.send({
+                type: "error",
+                message: "Challenge not found"
+            });
         }
-        else {
-            res.send({ type: "error", message: "Challenge not found" });
-        }
-    }
-    else {
-        res.send({ type: "error", message: "Cannot get challenges" });
+    } else {
+        res.send({
+            type: "error",
+            message: "Cannot get challenges"
+        });
     }
 });
 
@@ -273,37 +295,61 @@ app.post('/competition/new', async (req, res) => {
 
         console.log(files["coverImage"]);
 
-        let result = await apiHelper.validate(fields, [
-            {
-                link: "id", process: async (id) => {
+        let result = await apiHelper.validate(fields, [{
+                link: "id",
+                process: async (id) => {
                     let competitions = await firebase.getCompetitionIDList();
                     if (id != "" && !competitions.includes(id)) {
-                        return { status: true };
+                        return {
+                            status: true
+                        };
                     }
-                    return { status: false, failedMessage: id + " already existed" }
+                    return {
+                        status: false,
+                        failedMessage: id + " already existed"
+                    }
                 }
             },
-            { link: "ownerId" },
-            { link: "name" },
-            { link: "shortDescription" },
-            { link: "description" },
-            { link: "duration" },
             {
-                link: "challenges", process: (challengesText) => {
+                link: "ownerId"
+            },
+            {
+                link: "name"
+            },
+            {
+                link: "shortDescription"
+            },
+            {
+                link: "description"
+            },
+            {
+                link: "duration"
+            },
+            {
+                link: "challenges",
+                process: (challengesText) => {
                     let challenges = jsonToArray(JSON.parse(challengesText));
                     fields.challenges = challenges;
                     let ownChallenges = firebase.getOwnChallenge(fields.ownerId);
                     for (let i = 0; i < challenges.length; i++) {
                         if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
-                            return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
+                            return {
+                                status: false,
+                                failedMessage: "Cannot assign " + challenges[i].id
+                            };
                         }
                     }
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
             },
         ]);
         if (result.status) {
-            firebase.createCompetition({ ...fields, isPublished: false });
+            firebase.createCompetition({
+                ...fields,
+                isPublished: false
+            });
             try {
                 await fs.mkdirSync("images/" + fields.id + "/");
                 if (files['coverImage'] != null) {
@@ -313,14 +359,20 @@ app.post('/competition/new', async (req, res) => {
                     await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
                 }
 
-                res.send({ status: "success" });
+                res.send({
+                    status: "success"
+                });
+            } catch (e) {
+                res.send({
+                    status: "failed",
+                    message: "Cannot upload images"
+                });
             }
-            catch (e) {
-                res.send({ status: "failed", message: "Cannot upload images" });
-            }
-        }
-        else {
-            res.send({ status: "failed", message: result.message });
+        } else {
+            res.send({
+                status: "failed",
+                message: result.message
+            });
         }
     })
 
@@ -333,9 +385,9 @@ app.post('/competition/update', async (req, res) => {
     form.uploadDir = "temp/";
     form.parse(req, async (err, fields, files) => {
 
-        let result = await apiHelper.validate(fields, [
-            {
-                link: "id", process: async (competitionId) => {
+        let result = await apiHelper.validate(fields, [{
+                link: "id",
+                process: async (competitionId) => {
                     competition = await firebase.getCompetitionById(competitionId);
                     return {
                         status: (competition != null),
@@ -344,28 +396,43 @@ app.post('/competition/update', async (req, res) => {
                 }
             },
             {
-                link: "ownerId", process: async (ownerId) => {
+                link: "ownerId",
+                process: async (ownerId) => {
                     return {
                         status: (competition.ownerId == ownerId),
                         failedMessage: "Permission denied"
                     }
                 }
             },
-            { link: "name" },
-            { link: "shortDescription" },
-            { link: "description" },
-            { link: "duration" },
             {
-                link: "challenges", process: (challengesText) => {
+                link: "name"
+            },
+            {
+                link: "shortDescription"
+            },
+            {
+                link: "description"
+            },
+            {
+                link: "duration"
+            },
+            {
+                link: "challenges",
+                process: (challengesText) => {
                     let challenges = jsonToArray(JSON.parse(challengesText));
                     fields.challenges = challenges;
                     let ownChallenges = firebase.getOwnChallenge(fields.ownerId);
                     for (let i = 0; i < challenges.length; i++) {
                         if (ownChallenges.findIndex((entry) => entry.challengeID == challenges[i].id) == -1) {
-                            return { status: false, failedMessage: "Cannot assign " + challenges[i].id };
+                            return {
+                                status: false,
+                                failedMessage: "Cannot assign " + challenges[i].id
+                            };
                         }
                     }
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
             },
         ]);
@@ -392,90 +459,135 @@ app.post('/competition/update', async (req, res) => {
                         await fs.renameSync(files['medalIcon'].path, "images/" + fields.id + "/medalIcon");
                     }
 
-                    res.send({ status: "success" });
+                    res.send({
+                        status: "success"
+                    });
+                } catch (e) {
+                    res.send({
+                        status: "failed",
+                        message: e.message
+                    });
                 }
-                catch (e) {
-                    res.send({ status: "failed", message: e.message });
-                }
+            } else {
+                res.send({
+                    status: "failed",
+                    message: "Cannot update published competition"
+                });
             }
-            else {
-                res.send({ status: "failed", message: "Cannot update published competition" });
-            }
-        }
-        else {
-            res.send({ status: "failed", message: result.message });
+        } else {
+            res.send({
+                status: "failed",
+                message: result.message
+            });
         }
     })
 
 });
 
 app.post('/competition/list', async (req, res) => {
-    let result = await apiHelper.validate(req.body, [
-        { link: "ownerId" }
-    ]);
+    let result = await apiHelper.validate(req.body, [{
+        link: "ownerId"
+    }]);
     if (result.status) {
         let data = await firebase.getCompetitionList(req.body.ownerId)
-        res.send({ status: "success", data: data });
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
+        res.send({
+            status: "success",
+            data: data
+        });
+    } else {
+        res.send({
+            status: "failed",
+            message: result.message
+        });
     }
 });
 
 app.post('/competition/delete', async (req, res) => {
-    let result = await apiHelper.validate(req.body, [
-        {
-            link: "id", process: (id) => {
+    let result = await apiHelper.validate(req.body, [{
+            link: "id",
+            process: (id) => {
                 if (id != "" || id != undefined) {
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
-                return { status: false, failedMessage: id + " is invalid" };
+                return {
+                    status: false,
+                    failedMessage: id + " is invalid"
+                };
             }
         },
         {
-            link: "ownerId", process: async (ownerId) => {
+            link: "ownerId",
+            process: async (ownerId) => {
                 let competition = await firebase.getCompetitionById(req.body.id);
                 if (competition.ownerId == ownerId) {
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
-                return { status: false, failedMessage: "Permission denied" };
+                return {
+                    status: false,
+                    failedMessage: "Permission denied"
+                };
             }
         }
     ]);
     if (result.status) {
         firebase.removeCompetition(req.body.id);
-        res.send({ status: "success" });
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
+        res.send({
+            status: "success"
+        });
+    } else {
+        res.send({
+            status: "failed",
+            message: result.message
+        });
     }
 })
 
 async function checkCompetitionPermission(req) {
-    let result = await apiHelper.validate(req.body, [
-        {
-            link: "id", process: async (id) => {
+    let result = await apiHelper.validate(req.body, [{
+            link: "id",
+            process: async (id) => {
                 let competitionList = await firebase.getCompetitionIDList();
                 if (competitionList.includes(id)) {
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
-                return { status: false, failedMessage: id + " not found" };
+                return {
+                    status: false,
+                    failedMessage: id + " not found"
+                };
             }
         },
         {
-            link: "ownerId", process: async (ownerId) => {
+            link: "ownerId",
+            process: async (ownerId) => {
                 let competition = await firebase.getCompetitionById(req.body.id);
                 if (competition.ownerId == ownerId) {
-                    return { status: true };
+                    return {
+                        status: true
+                    };
                 }
-                return { status: false, failedMessage: "Permission denied" };
+                return {
+                    status: false,
+                    failedMessage: "Permission denied"
+                };
             }
         }, {
-            link: "emailList", process: (emailList) => {
+            link: "emailList",
+            process: (emailList) => {
                 if (emailList == undefined) {
-                    return { status: false, failedMessage: "Email list is invalid" };
+                    return {
+                        status: false,
+                        failedMessage: "Email list is invalid"
+                    };
                 }
-                return { status: true };
+                return {
+                    status: true
+                };
             }
         }
     ]);
@@ -487,10 +599,14 @@ app.post("/competition/invitation/invite", async (req, res) => {
     let result = await checkCompetitionPermission(req);
     if (result.status) {
         firebase.inviteToCompetition(req.body.id, req.body.emailList);
-        res.send({ status: "success" });
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
+        res.send({
+            status: "success"
+        });
+    } else {
+        res.send({
+            status: "failed",
+            message: result.message
+        });
     }
 });
 
@@ -498,10 +614,15 @@ app.post("/competition/invitation/list", async (req, res) => {
     let result = await checkCompetitionPermission(req);
     if (result.status) {
         let data = await firebase.getCompetitionInviteList(req.body.id);
-        res.send({ status: "success", data: data });
-    }
-    else {
-        res.send({ status: "failed", message: result.message });
+        res.send({
+            status: "success",
+            data: data
+        });
+    } else {
+        res.send({
+            status: "failed",
+            message: result.message
+        });
     }
 });
 
